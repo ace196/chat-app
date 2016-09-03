@@ -1,0 +1,87 @@
+<html>
+<head>
+	<title>Real-Time Chat Application</title>
+	<style>
+		[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  			display: none !important;
+		}
+		.contentWrap{
+			width: 500px;
+		}
+		#chat{
+			height:300px;
+			width: 399px;
+			float: left;
+			border: 1px #000 solid;
+			overflow-y: scroll;
+		}
+		#users{
+			width: 87px;
+			height: 300px;
+			float: right;
+			border: 1px #000 solid;
+			overflow-y: scroll;
+		}
+		#sendMessageForm{
+			width: 500px;
+			float: left;
+			padding: 8px;
+		}
+	</style>
+</head>
+<body ng-app="chat">
+	<div ng-controller='main'>
+		
+		<!-- LOGIN FORM-->
+		<div ng-show="!inRoom">
+			<h3>Choose a chatroom and your username and click the Submit button</h3>
+				<form name="loginForm" id="loginForm" ng-submit="enter()" novalidate> 
+					<select name="room" ng-model="chatRoom" required>
+						 <option ng-repeat="room in availableRooms" >{{room}}</option>
+					</select>
+
+					<input 	name="username" 
+							ng-keypress="error=''" 
+							type="text" 
+							ng-model="username" 
+							placeholder="Username" 
+							ng-maxlength=12 
+							required>
+					
+					<span ng-show="	loginForm.username.$dirty && loginForm.username.$error.required">
+						Both fields required!
+					</span>
+					<span ng-show="loginForm.username.$error.maxlength">Too long! 12 chars max!</span>
+					<span ng-show="error">{{error}}</span>
+					
+					</br></br>
+					
+					<button type="submit" ng-disabled="loginForm.$invalid || inRoom">Start chatting!</button>
+				</form>
+		</div>
+		
+		<!-- CHATROOM -->
+		<div ng-show="inRoom">
+			<h3 id="title">{{chatRoom}} chatroom</h3>
+			<div id="{{chatRoom}}" class="contentWrap">
+				<div id="chat" ng-bind-html=chatWindow>{{chatWindow}}</div>
+				<div id="users" ng-bind-html=usersOnline></div>
+				<form name ="sendMessageForm" id="sendMessageForm" ng-submit="sendMessage()" novalidate>
+					<input size=45 type="text" ng-model="message">
+					<button type="submit">Submit</button>
+					<button id="leavebtn" ng-click="leave()">Leave room</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="node_modules/socket.io-client/socket.io.js"></script>
+	
+	<script src="node_modules/angular/angular.js"></script>
+	<script src="node_modules/angular-socket-io/socket.js"></script>
+	<script src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
+	
+	<script src="client/app.js"></script>
+	<script src="client/factories/socket-factory.js"></script>
+</body>
+</html>
